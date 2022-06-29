@@ -63,6 +63,31 @@ class AuthController extends Controller
 
     /**
      *
+     * Set the role of user
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setRole(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'role_id' => 'required|integer',
+        ]);
+
+        if($validator->fails()) {
+            $this->logout();
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $user_id = Auth::user()->id;
+        $user = User::find($user_id);
+        $user->role_id = $request->role_id;
+        $user->save();
+        return response()->json(['message' => 'Role successfully set', 'status' => 'success'], Response::HTTP_OK);
+    }
+
+    /**
+     *
      * Login user and create token
      *
      * @param Request $request
